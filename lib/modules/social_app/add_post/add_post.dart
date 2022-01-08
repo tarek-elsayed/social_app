@@ -8,6 +8,7 @@ import 'package:social_app/shared/styles/colors.dart';
 class NewPostScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    var postText = TextEditingController();
     return BlocConsumer<SocialCubit, SocialState>(
       listener: (context, state) {},
       builder: (context, state) {
@@ -18,7 +19,20 @@ class NewPostScreen extends StatelessWidget {
             actions: [
               defaultTextButton(
                 text: "Post",
-                function: () {},
+                function: () {
+                  var now = DateTime.now();
+                  if (SocialCubit.get(context).postImage == null) {
+                    SocialCubit.get(context).createPost(
+                      dateTime: now.toString(),
+                      text: postText.text,
+                    );
+                  } else {
+                    SocialCubit.get(context).uploadPostImage(
+                      dateTime: now.toString(),
+                      text: postText.text,
+                    );
+                  }
+                },
               ),
             ],
           ),
@@ -26,6 +40,11 @@ class NewPostScreen extends StatelessWidget {
             padding: const EdgeInsets.all(10.0),
             child: Column(
               children: [
+                if (state is SocialCreatePostLoadingState)
+                  LinearProgressIndicator(),
+                SizedBox(
+                  height: 10.0,
+                ),
                 Row(
                   children: [
                     CircleAvatar(
@@ -58,18 +77,56 @@ class NewPostScreen extends StatelessWidget {
                 ),
                 Expanded(
                   child: TextFormField(
+                    controller: postText,
                     decoration: const InputDecoration(
                       border: InputBorder.none,
                       hintText: "What is on your mind ...",
                     ),
                   ),
                 ),
+                if (SocialCubit.get(context).postImage != null)
+                  Stack(
+                    alignment: AlignmentDirectional.topEnd,
+                    children: [
+                      Align(
+                        child: Container(
+                          height: 140.0,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(4.0),
+                              topRight: Radius.circular(4.0),
+                            ),
+                            image: DecorationImage(
+                              image:
+                                  FileImage(SocialCubit.get(context).postImage),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                        alignment: AlignmentDirectional.topCenter,
+                      ),
+                      CircleAvatar(
+                        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                        child: IconButton(
+                          onPressed: () {
+                            SocialCubit.get(context).removePostImage();
+                          },
+                          icon: Icon(
+                            Icons.close,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                SizedBox(height: 20.0,),
                 Row(
-
                   children: [
                     Expanded(
                       child: TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          SocialCubit.get(context).getPostImage();
+                        },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [

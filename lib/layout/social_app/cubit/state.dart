@@ -21,8 +21,21 @@ class SocialProfileImagePickedSuccessState extends SocialState {}
 class SocialProfileImagePickedErrorState extends SocialState {}
 
 class SocialUploadProfileImagePickedSuccessState extends SocialState {}
+
 class SocialUploadProfileImagePickedLoadingState extends SocialState {}
 
 class SocialUploadProfileImagePickedErrorState extends SocialState {}
+
 class SocialUpdateUserDateErrorState extends SocialState {}
 
+class SocialCreatePostLoadingState extends SocialState {}
+
+class SocialCreatePostSuccessState extends SocialState {}
+
+class SocialCreatePostErrorState extends SocialState {}
+
+class SocialPostImagePickedSuccessState extends SocialState {}
+
+class SocialPostImagePickedErrorState extends SocialState {}
+
+class SocialRemovePostImageState extends SocialState {}

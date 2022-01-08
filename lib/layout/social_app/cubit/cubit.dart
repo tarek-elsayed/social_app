@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:social_app/layout/social_app/cubit/state.dart';
+import 'package:social_app/model/post_model/post_model.dart';
 import 'package:social_app/model/social_model/social_user_model.dart';
 import 'package:social_app/modules/social_app/add_post/add_post.dart';
 import 'package:social_app/modules/social_app/chats/chats_screen.dart';
@@ -49,7 +50,6 @@ class SocialCubit extends Cubit<SocialState> {
     "Posts",
     "Users",
     "Settings",
-
   ];
 
   void changeBottomNav(int index) {
@@ -143,5 +143,77 @@ class SocialCubit extends Cubit<SocialState> {
         emit(SocialUpdateUserDateErrorState());
       });
     }
+  }
+
+  File postImage;
+
+  Future getPostImage() async {
+    final pikedImage = await piker.pickImage(
+      source: ImageSource.gallery,
+    );
+    if (pikedImage != null) {
+      postImage = File(pikedImage.path);
+      emit(SocialPostImagePickedSuccessState());
+      uploadProfileImage();
+    } else {
+      print('No image selected');
+      emit(SocialPostImagePickedErrorState());
+    }
+  }
+
+  void uploadPostImage({
+    @required String dateTime,
+    @required String text,
+  }) {
+    emit(SocialCreatePostLoadingState());
+    firebase_storage.FirebaseStorage.instance
+        .ref()
+        .child('UserImage/${Uri.file(postImage.path).pathSegments.last}')
+        .putFile(postImage)
+        .then((value) {
+      value.ref.getDownloadURL().then((value) {
+        emit(SocialCreatePostSuccessState());
+        createPost(
+          dateTime: dateTime,
+          text: text,
+          postImage: value,
+        );
+
+      }).catchError((error) {
+        emit(SocialPostImagePickedErrorState());
+      });
+    }).catchError((error) {
+      print("eee${error.toString()}");
+      emit(SocialPostImagePickedErrorState());
+    });
+  }
+
+  void createPost({
+    @required String dateTime,
+    @required String text,
+    String postImage,
+  }) {
+    print('tarek ${profileImage.toString()}');
+    emit(SocialCreatePostLoadingState());
+    PostModel postModel = PostModel(
+      name: model.name,
+      uId: model.uId,
+      image: model.image,
+      dateTime: dateTime,
+      text: text,
+      postImage: postImage ?? "",
+    );
+    FirebaseFirestore.instance
+        .collection('post')
+        .add(postModel.toMap())
+        .then((value) {
+      emit(SocialCreatePostSuccessState());
+    }).catchError((error) {
+      emit(SocialCreatePostErrorState());
+    });
+  }
+  void removePostImage(){
+    postImage=null;
+    emit(SocialRemovePostImageState());
   }
 }
