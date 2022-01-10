@@ -39,9 +39,9 @@ class SocialLayout extends StatelessWidget {
           body: cubit.screens[cubit.currentIndex],
           bottomNavigationBar: BottomNavigationBar(
             iconSize: 25.0,
-            backgroundColor: Colors.blue,
-            selectedItemColor: Colors.black,
-            unselectedItemColor: Colors.white,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            // selectedItemColor: Colors.black,
+            // unselectedItemColor: Colors.white,
             currentIndex: cubit.currentIndex,
             onTap: (index) {
               cubit.changeBottomNav(index);
