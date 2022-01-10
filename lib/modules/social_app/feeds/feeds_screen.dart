@@ -1,69 +1,90 @@
+import 'package:conditional_builder/conditional_builder.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:social_app/layout/social_app/cubit/cubit.dart';
+import 'package:social_app/layout/social_app/cubit/state.dart';
+import 'package:social_app/model/post_model/post_model.dart';
 import 'package:social_app/shared/styles/colors.dart';
 
 class FeedsScreen extends StatelessWidget {
+  var comment =TextEditingController();
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      physics: BouncingScrollPhysics(),
-      child: Column(
-        children: [
-          // Card(
-          //   clipBehavior: Clip.antiAliasWithSaveLayer,
-          //   elevation: 10.0,
-          //   margin: EdgeInsets.all(8.0),
-          //   child: Stack(
-          //     alignment: AlignmentDirectional.bottomEnd,
-          //     children: [
-          //       Image(
-          //         image: NetworkImage(
-          //             "https://image.freepik.com/free-photo/portrait-beautiful-young-woman-gesticulating_273609-41056.jpg"),
-          //         fit: BoxFit.cover,
-          //         height: 200.0,
-          //         width: double.infinity,
-          //       ),
-          //       Padding(
-          //         padding: const EdgeInsets.all(8.0),
-          //         child: Text(
-          //           'communication with friends',
-          //           style: Theme.of(context).textTheme.subtitle1,
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // ),
-          ListView.separated(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            itemBuilder: (context, index) => buildPostItem(context),
-            itemCount: 3,
-            separatorBuilder: (context, index) => SizedBox(
-              height: 15.0,
-            ),
-          ),
-          SizedBox(
-            height: 15.0,
-          ),
-        ],
-      ),
-    );
+    return BlocConsumer<SocialCubit, SocialState>(
+        listener: (context, state) {},
+        builder: (context, state) {
+          return ConditionalBuilder(
+            condition: (SocialCubit.get(context).posts.length > 0 &&
+                SocialCubit.get(context).model != null)&& SocialCubit.get(context).comment.length > 0,
+            builder: (context) {
+              return SingleChildScrollView(
+                physics: BouncingScrollPhysics(),
+                child: Column(
+                  children: [
+                    // Card(
+                    //   clipBehavior: Clip.antiAliasWithSaveLayer,
+                    //   elevation: 10.0,
+                    //   margin: EdgeInsets.all(8.0),
+                    //   child: Stack(
+                    //     alignment: AlignmentDirectional.bottomEnd,
+                    //     children: [
+                    //       Image(
+                    //         image: NetworkImage(
+                    //             "https://image.freepik.com/free-photo/portrait-beautiful-young-woman-gesticulating_273609-41056.jpg"),
+                    //         fit: BoxFit.cover,
+                    //         height: 200.0,
+                    //         width: double.infinity,
+                    //       ),
+                    //       Padding(
+                    //         padding: const EdgeInsets.all(8.0),
+                    //         child: Text(
+                    //           'communication with friends',
+                    //           style: Theme.of(context).textTheme.subtitle1,
+                    //         ),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
+                    ListView.separated(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) => buildPostItem(
+                          SocialCubit.get(context).posts[index],
+                          context,
+                          index,
+                          state),
+                      itemCount: SocialCubit.get(context).posts.length,
+                      separatorBuilder: (context, index) => SizedBox(
+                        height: 15.0,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 15.0,
+                    ),
+                  ],
+                ),
+              );
+            },
+            fallback: (context) => Center(child: CircularProgressIndicator()),
+          );
+        });
   }
 
-  Widget buildPostItem(context) => Card(
+  Widget buildPostItem(PostModel model, context, index, state) => Card(
         clipBehavior: Clip.antiAliasWithSaveLayer,
         elevation: 5.0,
         margin: EdgeInsets.symmetric(horizontal: 8.0),
         child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
                   CircleAvatar(
-                    radius: 25.0,
-                    backgroundImage: NetworkImage(
-                        'https://image.freepik.com/free-photo/joyful-afro-woman-raises-arms-tilts-head-dressed-casual-knitted-jumper-laughs-from-happiness-celebrates-victory-isolated-yellow_273609-32594.jpg'),
-                  ),
+                      radius: 25.0,
+                      backgroundImage: NetworkImage(
+                          "${SocialCubit.get(context).model.image}")),
                   SizedBox(
                     width: 5.0,
                   ),
@@ -74,7 +95,7 @@ class FeedsScreen extends StatelessWidget {
                         Row(
                           children: [
                             Text(
-                              'Tarek El-sayed',
+                              '${model.name}',
                               style: TextStyle(height: 1.0),
                             ),
                             SizedBox(
@@ -88,7 +109,7 @@ class FeedsScreen extends StatelessWidget {
                           ],
                         ),
                         Text(
-                          'January 03 2022 at 07:00 pm',
+                          '${model.dateTime}',
                           style: Theme.of(context).textTheme.caption,
                         ),
                       ],
@@ -115,7 +136,7 @@ class FeedsScreen extends StatelessWidget {
                 ),
               ),
               Text(
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat",
+                '${model.text}',
                 style: Theme.of(context).textTheme.subtitle1,
               ),
               Padding(
@@ -189,18 +210,23 @@ class FeedsScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              Container(
-                height: 140.0,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4.0),
-                  image: DecorationImage(
-                    image: NetworkImage(
-                        "https://image.freepik.com/free-photo/portrait-beautiful-young-woman-gesticulating_273609-41056.jpg"),
-                    fit: BoxFit.cover,
+              if (model.postImage != "")
+                Padding(
+                  padding: const EdgeInsetsDirectional.only(top: 15.0),
+                  child: Container(
+                    height: 140.0,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4.0),
+                      image: DecorationImage(
+                        image: NetworkImage(
+                          "${model.postImage}",
+                        ),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
                 ),
-              ),
               Row(
                 children: [
                   Expanded(
@@ -219,7 +245,7 @@ class FeedsScreen extends StatelessWidget {
                               width: 5,
                             ),
                             Text(
-                              '1200',
+                              '${SocialCubit.get(context).likes[index]}',
                               style: Theme.of(context)
                                   .textTheme
                                   .caption
@@ -247,7 +273,7 @@ class FeedsScreen extends StatelessWidget {
                               width: 5,
                             ),
                             Text(
-                              '120 comment',
+                              '${SocialCubit.get(context).comment[index]} comment',
                               style: Theme.of(context)
                                   .textTheme
                                   .caption
@@ -271,55 +297,77 @@ class FeedsScreen extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: InkWell(
-                      onTap: () {},
-                      child: Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 18.0,
-                            backgroundImage: NetworkImage(
-                                'https://image.freepik.com/free-photo/joyful-afro-woman-raises-arms-tilts-head-dressed-casual-knitted-jumper-laughs-from-happiness-celebrates-victory-isolated-yellow_273609-32594.jpg'),
-                          ),
-                          SizedBox(
-                            width: 10.0,
-                          ),
-                          Text(
-                            'Write a comment...',
-                            style: Theme.of(context)
-                                .textTheme
-                                .caption
-                                .copyWith(fontSize: 16.0),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {},
                     child: Row(
                       children: [
-                        Icon(
-                          Icons.favorite_outline,
-                          size: 18,
-                          color: Colors.red,
+                        CircleAvatar(
+                          radius: 18.0,
+                          backgroundImage: NetworkImage(
+                              '${SocialCubit.get(context).model.image}'),
                         ),
                         SizedBox(
-                          width: 5,
+                          width: 15.0,
                         ),
-                        Text(
-                          'Like',
-                          style: Theme.of(context)
-                              .textTheme
-                              .caption
-                              .copyWith(fontSize: 15),
+                        Expanded(
+                          child: TextField(
+                            controller: comment,
+                            decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: "Write a comment.."),
+                            onChanged: (val) {
+                              if (val.isNotEmpty) {
+                                SocialCubit.get(context).change(index);
+                              }
+                              if (val.length == 0) {
+                                SocialCubit.get(context).unChange(index);
+                              }
+                            },
+                            // onTap: () {
+                            //   SocialCubit.get(context).change(index);
+                            // },
+                          ),
                         ),
                       ],
                     ),
                   ),
+                 state is SocialChangeState ? IconButton(
+                      onPressed: (){
+                        SocialCubit.get(context)
+                            .commentPost(SocialCubit.get(context).postId[index],comment.text);
+                      },
+                      icon: Icon(Icons.send),
+                  ): InkWell(
+                   onTap: () {
+                     SocialCubit.get(context)
+                         .likePost(SocialCubit.get(context).postId[index]);
+                   },
+                   child: Row(
+                     children: [
+                       Icon(
+                         Icons.favorite_outline,
+                         size: 18,
+                         color: Colors.red,
+                       ),
+                       SizedBox(
+                         width: 5,
+                       ),
+                       Text(
+                         'Like',
+                         style: Theme.of(context)
+                             .textTheme
+                             .caption
+                             .copyWith(fontSize: 15),
+                       ),
+                     ],
+                   ),
+                 ),
                 ],
               ),
             ],
           ),
         ),
       );
+
 }
+
+///
+/// القوه تفتح اجنحتها لمن يستحقها والموت يفرد جناحيه لكل جبان
