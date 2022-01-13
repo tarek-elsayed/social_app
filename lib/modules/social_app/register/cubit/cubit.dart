@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_app/model/social_model/social_user_model.dart';
 import 'package:social_app/modules/social_app/register/cubit/states.dart';
+import 'package:social_app/shared/network/local/cache_helper.dart';
 
 
 class SocialRegisterCubit extends Cubit<SocialRegisterStates> {
@@ -58,6 +59,8 @@ class SocialRegisterCubit extends Cubit<SocialRegisterStates> {
         .doc(uId)
         .set(model.toMap())
         .then((value) {
+      CacheHelper.saveData(key: "uId", value: uId);
+
       emit(SocialCreateUserSuccessState());
     }).catchError((error) {
       emit(SocialCreateUserErrorState(error.toString()));

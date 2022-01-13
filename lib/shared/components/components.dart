@@ -185,7 +185,7 @@ Widget tasksBuilder({
 
 Widget myDivider() => Divider(
       height: 1.0,
-      color: Colors.amber,
+      color: Colors.blue,
       thickness: 2.0,
     );
 

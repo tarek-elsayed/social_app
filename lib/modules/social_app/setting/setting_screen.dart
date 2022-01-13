@@ -31,8 +31,9 @@ class SettingScreen extends StatelessWidget {
                             topRight: Radius.circular(4.0),
                           ),
                           image: DecorationImage(
-                            image: NetworkImage(
-                                "https://image.freepik.com/free-photo/portrait-beautiful-young-woman-gesticulating_273609-41056.jpg"),
+                            image: NetworkImage
+                              (
+                                'https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OXx8Y2Fyc3xlbnwwfHwwfHw%3D&w=1000&q=80'),
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -78,7 +79,7 @@ class SettingScreen extends StatelessWidget {
                         child: Column(
                           children: [
                             Text(
-                              "100",
+                              "15",
                               style: Theme.of(context).textTheme.subtitle2,
                             ),
                             Text(
@@ -95,7 +96,7 @@ class SettingScreen extends StatelessWidget {
                         child: Column(
                           children: [
                             Text(
-                              "250",
+                              "20",
                               style: Theme.of(context).textTheme.subtitle2,
                             ),
                             Text(
@@ -112,7 +113,7 @@ class SettingScreen extends StatelessWidget {
                         child: Column(
                           children: [
                             Text(
-                              "10K",
+                              "50",
                               style: Theme.of(context).textTheme.subtitle2,
                             ),
                             Text(
@@ -129,7 +130,7 @@ class SettingScreen extends StatelessWidget {
                         child: Column(
                           children: [
                             Text(
-                              "60",
+                              "4",
                               style: Theme.of(context).textTheme.subtitle2,
                             ),
                             Text(

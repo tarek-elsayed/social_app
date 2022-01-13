@@ -348,6 +348,7 @@ class SocialCubit extends Cubit<SocialState> {
   void getMessages({
     @required String receiverId,
   }) {
+
     FirebaseFirestore.instance
         .collection('user')
         .doc(model.uId)
